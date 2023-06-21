@@ -29,7 +29,12 @@ module.exports.findUserById = (req, res) => {
       }
       return res.send({ data: users });
     })
-    .catch(() => res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные при создании пользователя' });
+      }
+      return res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' });
+    });
 };
 
 module.exports.updateProfile = (req, res) => {
