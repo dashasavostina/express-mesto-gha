@@ -1,11 +1,16 @@
 const User = require('../models/user');
-const { ERROR_CODE_INVALID, ERROR_CODE_NOTFOUND, ERROR_CODE_DEFAULT } = require('../utils/status-code');
+const {
+  ERROR_CODE_INVALID,
+  ERROR_CODE_NOTFOUND,
+  ERROR_CODE_DEFAULT,
+  SUCCESS,
+} = require('../utils/status-code');
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(SUCCESS).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные при создании пользователя' });
@@ -43,7 +48,6 @@ module.exports.updateProfile = (req, res) => {
   User.findByIdAndUpdate(userId, { name, about }, {
     new: true,
     runValidators: true,
-    upsert: true,
   })
     .then((user) => {
       if (!userId) {
@@ -65,7 +69,6 @@ module.exports.updateAvatar = (req, res) => {
   User.findByIdAndUpdate(userId, { avatar }, {
     new: true,
     runValidators: true,
-    upsert: true,
   })
     .then((user) => {
       if (!userId) {

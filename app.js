@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
+
 const { ERROR_CODE_NOTFOUND } = require('./utils/status-code');
 
 const routeUser = require('./routes/users');
@@ -11,6 +13,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(helmet());
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 app.listen(PORT);
