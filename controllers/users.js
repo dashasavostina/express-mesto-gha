@@ -30,7 +30,7 @@ module.exports.findUserById = (req, res) => {
       return res.send({ data: users });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные при создании пользователя' });
       }
       return res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' });
