@@ -37,7 +37,7 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные для постановки лайка.' });
+        return res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные для удаления карточки.' });
       }
       return res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' });
     });
@@ -53,10 +53,9 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(ERROR_CODE_NOTFOUND).send({ message: 'Передан несуществуюий id карточки' });
-      } else if (!userId) {
-        res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные для постановки лайка.' });
-      } else res.send({ data: card });
+        return res.status(ERROR_CODE_NOTFOUND).send({ message: 'Передан несуществуюий id карточки' });
+      }
+      return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
