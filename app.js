@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const ERROR_CODE_NOTFOUND = require('./utils/status-code');
 
 const routeUser = require('./routes/users');
 const routeCard = require('./routes/cards');
@@ -26,5 +27,5 @@ app.use(routeUser);
 app.use(routeCard);
 
 app.patch('*', (req, res) => {
-  res.send({ message: 'Страница не найдена' });
+  res.status(ERROR_CODE_NOTFOUND).send({ message: 'Страница не найдена' });
 });
