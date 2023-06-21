@@ -21,11 +21,11 @@ module.exports.findUsers = (req, res) => {
 };
 
 module.exports.findUserById = (req, res) => {
-  const { userId } = req.params.userId;
+  const { userId } = req.params;
   User.findById(userId)
     .then((users) => {
       if (!users) {
-        return res.status(ERROR_CODE_NOTFOUND).send({ message: `Пользователь по указанному id ${userId} не найден` });
+        return res.status(ERROR_CODE_NOTFOUND).send({ message: 'Пользователь по указанному id не найден' });
       }
       return res.send({ data: users });
     })
@@ -42,7 +42,7 @@ module.exports.updateProfile = (req, res) => {
   })
     .then((user) => {
       if (!userId) {
-        return res.status(ERROR_CODE_NOTFOUND).send({ message: `Пользователь с указанным _id ${userId} не найден.` });
+        return res.status(ERROR_CODE_NOTFOUND).send({ message: 'Пользователь с указанным _id не найден.' });
       }
       return res.send({ data: user });
     })
@@ -64,7 +64,7 @@ module.exports.updateAvatar = (req, res) => {
   })
     .then((user) => {
       if (!userId) {
-        return res.status(ERROR_CODE_NOTFOUND).send({ message: `Пользователь с указанным _id ${userId} не найден.` });
+        return res.status(ERROR_CODE_NOTFOUND).send({ message: 'Пользователь с указанным _id не найден.' });
       }
       return res.send({ data: user });
     })

@@ -31,7 +31,7 @@ module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
-        return res.status(ERROR_CODE_NOTFOUND).send({ message: `Карточка с указанным id ${cardId} не найдена` });
+        return res.status(ERROR_CODE_NOTFOUND).send({ message: 'Карточка с указанным id не найдена' });
       }
       return res.send({ data: card });
     })
@@ -48,7 +48,7 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(ERROR_CODE_NOTFOUND).send({ message: `Передан несуществуюий id карточки ${cardId}` });
+        res.status(ERROR_CODE_NOTFOUND).send({ message: 'Передан несуществуюий id карточки' });
       } else if (!userId) {
         res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       } else res.send({ data: card });
@@ -66,7 +66,7 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(ERROR_CODE_NOTFOUND).send({ message: `Передан несуществуюий id карточки ${cardId}` });
+        res.status(ERROR_CODE_NOTFOUND).send({ message: 'Передан несуществуюий id карточки' });
       } else if (!userId) {
         res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       } else res.send({ data: card });
