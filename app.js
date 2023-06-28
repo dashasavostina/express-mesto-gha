@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
+const { errors } = require('celebrate');
 
 const NotFoundError = require('./middlewares/errors/not-found-err');
 
@@ -34,6 +35,7 @@ app.patch('*', (req, res, next) => {
 
 app.use(auth);
 
+app.use(errors);
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
@@ -44,4 +46,5 @@ app.use((err, req, res, next) => {
         ? 'На сервере произошла ошибка'
         : message,
     });
+  next();
 });

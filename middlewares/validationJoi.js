@@ -6,16 +6,16 @@ module.exports.createUserValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().min(4),
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    avatar: Joi.string().min(4).pattern(regular),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
   }),
 });
 
 module.exports.loginValidation = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
   }),
 });
 
@@ -25,7 +25,7 @@ module.exports.userIdValidate = celebrate({
   }),
 });
 
-module.exports.avatarUpdateValidatin = celebrate({
+module.exports.avatarUpdateValidation = celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().min(4).pattern(regular),
   }),
@@ -41,7 +41,7 @@ module.exports.userUpdateValidation = celebrate({
 module.exports.createCardValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().pattern(regular).required().min(4),
+    link: Joi.string().pattern(regular).required(),
   }),
 });
 
