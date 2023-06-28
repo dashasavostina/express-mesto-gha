@@ -10,6 +10,8 @@ const routeCard = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
+const { createUserValidation, loginValidation } = require('./middlewares/validationJoi');
+
 const { PORT = 3000 } = process.env;
 const app = express();
 
@@ -22,8 +24,8 @@ app.listen(PORT);
 
 app.use(routeUser);
 app.use(routeCard);
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', loginValidation, login);
+app.post('/signup', createUserValidation, createUser);
 app.use(auth);
 
 app.use('/cards', require('./routes/cards'));

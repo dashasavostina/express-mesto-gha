@@ -1,4 +1,5 @@
-const { celebrate, Joi, CelebrateError } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
+
 const regular = /(http?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9\.[^/s]{2,}|http?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^/s]{2,}|www\.[a-zA-Z0-9]+\.[^/s]{2,})/;
 
 module.exports.createUserValidation = celebrate({
