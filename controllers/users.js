@@ -4,7 +4,7 @@ const User = require('../models/user');
 
 const NotFoundError = require('../middlewares/errors/not-found-err');
 const BadRequestError = require('../middlewares/errors/bad-request-err');
-const UnauthorizedError = require('../middlewares/errors/unauthorized-err');
+//const UnauthorizedError = require('../middlewares/errors/unauthorized-err');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -18,7 +18,9 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     })
-      .then((user) => res.status(201).send({ data: user }))
+      .then((data) => res.status(201).send({
+        name: data.name, about: data.about, avatar: data.avatar, email: data.email,
+      }))
       .catch((err) => {
         if (err.name === 'ValidationError') {
           next(new BadRequestError('Переданы некорректные данные при регистрации пользователя'));
@@ -100,9 +102,6 @@ module.exports.getUser = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)
     .then((user) => {
-      if (!user) {
-        next(new NotFoundError('Пользователь с указанным _id не найден.'));
-      }
       res.send({ data: user });
     })
     .catch(next);
@@ -115,7 +114,5 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
     })
-    .catch(() => {
-      next(new UnauthorizedError('Необходима авторизация'));
-    });
+    .catch(next);
 };

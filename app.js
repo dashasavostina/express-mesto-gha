@@ -22,19 +22,19 @@ app.use(helmet());
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 app.listen(PORT);
 
-app.use(routeUser);
-app.use(routeCard);
 app.post('/signin', loginValidation, login);
 app.post('/signup', createUserValidation, createUser);
-app.use(auth);
 
-app.use('/cards', require('./routes/cards'));
-app.use('/users', require('./routes/users'));
+app.use('/cards', auth, routeCard);
+app.use('/users', auth, routeUser);
 
 app.patch('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
 
+app.use(auth);
+
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res
