@@ -4,7 +4,6 @@ const User = require('../models/user');
 
 const NotFoundError = require('../middlewares/errors/not-found-err');
 const BadRequestError = require('../middlewares/errors/bad-request-err');
-//const UnauthorizedError = require('../middlewares/errors/unauthorized-err');
 
 module.exports.createUser = (req, res, next) => {
   const {
