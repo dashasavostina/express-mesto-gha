@@ -3,10 +3,12 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
   ERROR_CODE_INVALID,
-  ERROR_CODE_NOTFOUND,
   ERROR_CODE_DEFAULT,
   SUCCESS,
 } = require('../utils/status-code');
+const NotFoundError = require('../middlewares/errors/not-found-err');
+const InvalidError = require('../middlewares/errors/invalid-err');
+const UnauthorizedError = require('../middlewares/errors/unauthorized-err');
 
 module.exports.createUser = (req, res) => {
   const {
@@ -23,7 +25,7 @@ module.exports.createUser = (req, res) => {
       .then((user) => res.status(SUCCESS).send({ data: user }))
       .catch((err) => {
         if (err.name === 'ValidationError') {
-          return res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные при создании пользователя' });
+          throw new UnauthorizedError('Переданы некорректные данные при регистрации пользователя');
         }
         return res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' });
       }));
@@ -35,24 +37,25 @@ module.exports.findUsers = (req, res) => {
     .catch(() => res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' }));
 };
 
-module.exports.findUserById = (req, res) => {
+module.exports.findUserById = (req, res, next) => {
   const { userId } = req.params;
   User.findById(userId)
     .then((users) => {
       if (!users) {
-        return res.status(ERROR_CODE_NOTFOUND).send({ message: 'Пользователь по указанному id не найден' });
+        throw new NotFoundError('Пользователь по указанному id не найден');
       }
       return res.send({ data: users });
     })
+    .catch(next)
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные при создании пользователя' });
+        throw new InvalidError('Переданы некорректные данные при поиске пользователя');
       }
       return res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' });
     });
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const userId = req.user._id;
   const { name, about } = req.body;
   User.findByIdAndUpdate(userId, { name, about }, {
@@ -61,10 +64,11 @@ module.exports.updateProfile = (req, res) => {
   })
     .then((user) => {
       if (!userId) {
-        return res.status(ERROR_CODE_NOTFOUND).send({ message: 'Пользователь с указанным _id не найден.' });
+        throw new NotFoundError('Пользователь с указанным _id не найден.');
       }
       return res.send({ data: user });
     })
+    .catch(next)
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные при обновлении профиля' });
@@ -73,7 +77,7 @@ module.exports.updateProfile = (req, res) => {
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const userId = req.user._id;
   const { avatar } = req.body;
   User.findByIdAndUpdate(userId, { avatar }, {
@@ -82,16 +86,29 @@ module.exports.updateAvatar = (req, res) => {
   })
     .then((user) => {
       if (!userId) {
-        return res.status(ERROR_CODE_NOTFOUND).send({ message: 'Пользователь с указанным _id не найден.' });
+        throw new NotFoundError('Пользователь с указанным _id не найден.');
       }
       return res.send({ data: user });
     })
+    .catch(next)
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       }
       return res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' });
     });
+};
+
+module.exports.getUser = (req, res, next) => {
+  const userId = req.user._id;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        next(new NotFoundError('Пользователь с указанным _id не найден.'));
+      }
+      res.send({ data: user });
+    })
+    .catch(next);
 };
 
 module.exports.login = (req, res) => {

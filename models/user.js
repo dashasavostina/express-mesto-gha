@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const avatarLink = require('../utils/avatar-link');
 
 const userSchema = new mongoose.Schema(
   {
@@ -13,12 +14,12 @@ const userSchema = new mongoose.Schema(
     about: {
       type: String,
       default: 'Исследователь',
-      minlength: 2,
-      maxlength: 30,
+      minlength: [2, 'Минимальная длина поля "about" - 2'],
+      maxlength: [30, 'Максимальная длина поля "about" - 30'],
     },
     avatar: {
       type: String,
-      default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+      default: avatarLink,
       validate: {
         validator: (v) => validator.isURL(v),
         message: 'Некорректный URL',
@@ -36,7 +37,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Поле "password" должно быть заполнено'],
-      minlength: 8,
+      minlength: [8, 'Минимальная длина поля "password" - 8'],
       select: false,
     },
   },
