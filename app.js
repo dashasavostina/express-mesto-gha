@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 
-const { ERROR_CODE_NOTFOUND } = require('./utils/status-code');
+const NotFoundError = require('./middlewares/errors/not-found-err');
 
 const routeUser = require('./routes/users');
 const routeCard = require('./routes/cards');
@@ -31,7 +31,9 @@ app.use(auth);
 app.use('/cards', require('./routes/cards'));
 app.use('/users', require('./routes/users'));
 
-app.patch('*', (req, res) => res.status(ERROR_CODE_NOTFOUND).send({ message: 'Страница не найдена' }));
+app.patch('*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
+});
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;

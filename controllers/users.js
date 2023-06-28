@@ -1,16 +1,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const {
-  ERROR_CODE_INVALID,
-  ERROR_CODE_DEFAULT,
-  SUCCESS,
-} = require('../utils/status-code');
+
 const NotFoundError = require('../middlewares/errors/not-found-err');
-const InvalidError = require('../middlewares/errors/invalid-err');
+const BadRequestError = require('../middlewares/errors/bad-request-err');
 const UnauthorizedError = require('../middlewares/errors/unauthorized-err');
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -22,19 +18,20 @@ module.exports.createUser = (req, res) => {
       email,
       password: hash,
     })
-      .then((user) => res.status(SUCCESS).send({ data: user }))
+      .then((user) => res.status(201).send({ data: user }))
       .catch((err) => {
         if (err.name === 'ValidationError') {
-          throw new UnauthorizedError('Переданы некорректные данные при регистрации пользователя');
+          next(new BadRequestError('Переданы некорректные данные при регистрации пользователя'));
+        } else {
+          next(err);
         }
-        return res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' });
       }));
 };
 
-module.exports.findUsers = (req, res) => {
+module.exports.findUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' }));
+    .catch(next);
 };
 
 module.exports.findUserById = (req, res, next) => {
@@ -42,16 +39,16 @@ module.exports.findUserById = (req, res, next) => {
   User.findById(userId)
     .then((users) => {
       if (!users) {
-        throw new NotFoundError('Пользователь по указанному id не найден');
+        next(new NotFoundError('Пользователь по указанному id не найден'));
       }
       return res.send({ data: users });
     })
-    .catch(next)
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new InvalidError('Переданы некорректные данные при поиске пользователя');
+        next(new BadRequestError('Переданы некорректные данные при поиске пользователя'));
+      } else {
+        next(err);
       }
-      return res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' });
     });
 };
 
@@ -64,16 +61,16 @@ module.exports.updateProfile = (req, res, next) => {
   })
     .then((user) => {
       if (!userId) {
-        throw new NotFoundError('Пользователь с указанным _id не найден.');
+        next(new NotFoundError('Пользователь с указанным _id не найден.'));
       }
       return res.send({ data: user });
     })
-    .catch(next)
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+        next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
+      } else {
+        next(err);
       }
-      return res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' });
     });
 };
 
@@ -86,16 +83,16 @@ module.exports.updateAvatar = (req, res, next) => {
   })
     .then((user) => {
       if (!userId) {
-        throw new NotFoundError('Пользователь с указанным _id не найден.');
+        next(new NotFoundError('Пользователь с указанным _id не найден.'));
       }
       return res.send({ data: user });
     })
-    .catch(next)
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE_INVALID).send({ message: 'Переданы некорректные данные при обновлении аватара' });
+        next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
+      } else {
+        next(err);
       }
-      return res.status(ERROR_CODE_DEFAULT).send({ message: 'Ошибка по умолчанию' });
     });
 };
 
@@ -111,16 +108,14 @@ module.exports.getUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
     })
-    .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
+    .catch(() => {
+      next(new UnauthorizedError('Необходима авторизация'));
     });
 };
