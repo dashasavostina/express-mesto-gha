@@ -5,6 +5,7 @@ const User = require('../models/user');
 const NotFoundError = require('../middlewares/errors/not-found-err');
 const BadRequestError = require('../middlewares/errors/bad-request-err');
 const ConflictError = require('../middlewares/errors/conflict-err');
+const { SUCCESS_CREATED, EXISTING_CODE } = require('../utils/res-status');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -18,13 +19,13 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     })
-      .then((data) => res.status(201).send({
+      .then((data) => res.status(SUCCESS_CREATED).send({
         name: data.name, about: data.about, avatar: data.avatar, email: data.email,
       }))
       .catch((err) => {
         if (err.name === 'ValidationError') {
           next(new BadRequestError('Переданы некорректные данные при регистрации пользователя'));
-        } else if (err.code === 11000) {
+        } else if (err.code === EXISTING_CODE) {
           next(new ConflictError('Пользователь с данным email уже существует'));
         } else {
           next(err);
