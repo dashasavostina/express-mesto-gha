@@ -27,13 +27,13 @@ app.patch('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
 
+app.use(auth);
+
 app.post('/signin', loginValidation, login);
 app.post('/signup', createUserValidation, createUser);
 
 app.use('/cards', auth, routeCard);
 app.use('/users', auth, routeUser);
-
-app.use(auth);
 
 app.use(errors);
 // eslint-disable-next-line no-unused-vars
