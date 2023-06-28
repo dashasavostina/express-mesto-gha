@@ -29,10 +29,8 @@ app.patch('*', (req, res, next) => {
 app.post('/signin', loginValidation, login);
 app.post('/signup', createUserValidation, createUser);
 
-app.use(routeCard);
-app.use(routeUser);
-
-app.use(auth);
+app.use(auth, routeCard);
+app.use(auth, routeUser);
 
 app.use(errors());
 
