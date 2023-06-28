@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
+const { errors } = require('celebrate');
 
 const NotFoundError = require('./middlewares/errors/not-found-err');
 
@@ -32,6 +33,8 @@ app.use(auth);
 
 app.use(routeCard);
 app.use(routeUser);
+
+app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
