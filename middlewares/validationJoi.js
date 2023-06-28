@@ -8,14 +8,14 @@ module.exports.createUserValidation = celebrate({
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().min(4),
     email: Joi.string().required().email(),
-    password: Joi.string().required.min(8),
+    password: Joi.string().required().min(8),
   }),
 });
 
 module.exports.loginValidation = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required.min(8),
+    password: Joi.string().required().min(8),
   }),
 });
 
