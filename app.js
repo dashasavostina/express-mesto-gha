@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-const { errors } = require('celebrate');
 
 const NotFoundError = require('./middlewares/errors/not-found-err');
 
@@ -30,10 +29,11 @@ app.patch('*', auth, (req, res, next) => {
 app.post('/signin', loginValidation, login);
 app.post('/signup', createUserValidation, createUser);
 
+app.use(auth);
+
 app.use('/cards', auth, routeCard);
 app.use('/users', auth, routeUser);
 
-app.use(errors);
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
