@@ -1,4 +1,0 @@
-const SUCCESS_CREATED = 201;
-const EXISTING_CODE = 11000;
-
-module.exports = { SUCCESS_CREATED, EXISTING_CODE };

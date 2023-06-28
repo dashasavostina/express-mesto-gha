@@ -2,14 +2,13 @@ const BadRequestError = require('../middlewares/errors/bad-request-err');
 const Card = require('../models/card');
 const NotFoundError = require('../middlewares/errors/not-found-err');
 const ForbiddenError = require('../middlewares/errors/forbidden-err');
-const SUCCESS_CREATED = require('../utils/res-status');
 
 module.exports.createCard = (req, res, next) => {
   const userId = req.user._id;
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: userId })
-    .then((card) => res.status(SUCCESS_CREATED).send({ data: card }))
+    .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании карточки'));
