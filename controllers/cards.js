@@ -1,6 +1,7 @@
 const BadRequestError = require('../middlewares/errors/bad-request-err');
 const Card = require('../models/card');
 const NotFoundError = require('../middlewares/errors/not-found-err');
+const ForbiddenError = require('../middlewares/errors/forbidden-err');
 
 module.exports.createCard = (req, res, next) => {
   const userId = req.user._id;
@@ -30,12 +31,19 @@ module.exports.findCards = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  Card.findByIdAndRemove(cardId)
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
         next(new NotFoundError('Карточка с указанным id не найдена'));
       }
-      return res.send({ data: card });
+      if (!card.owner.equals(req.user._id)) {
+        return next(new ForbiddenError('Вы не являетесь владельцем карточки, удаление невозможно'));
+      }
+      return Card.findByIdAndDelete(cardId)
+        .orFail(() => new NotFoundError('Карточка с указанным id не найдена'))
+        .then(() => {
+          res.send({ message: 'Карточка успешна удалена' });
+        });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
