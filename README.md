@@ -1,6 +1,11 @@
 [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
 # Проект Mesto фронтенд + бэкенд
 
+### Стек технологий
+- node.js
+- express.js
+- mongoDB
+
 ## Ссылка на репозиторий
 
 [https://github.com/dashasavostina/express-mesto-gha](https://github.com/dashasavostina/express-mesto-gha)
